@@ -1,8 +1,7 @@
 import time
-import threading
 import requests
-from pprint import pprint
 from datetime import datetime
+from tqdm import tqdm
 
 
 class YaUploader:
@@ -33,12 +32,11 @@ class YaUploader:
             print(f'{time.ctime()} начинается загрузка фотографий на YaDisk', file=logfile)
             print(f'файлов к загрузке: {len(self.dict_files)}', file=logfile)
 
-        for file in self.dict_files:
+        for file in tqdm(self.dict_files):
             url = self.dict_files[file]
             headers = self.get_headers(self.token)
             params = self.get_params(url, str(today) + '/' + file)
             request = requests.post(link, headers=headers, params=params)
-            response = request.json()
             result_json[url] = [request.status_code, file]
             with open('log.txt', 'a', encoding='utf-8') as logfile:
                 if request.status_code == 202:
@@ -89,7 +87,6 @@ class VkPhotos:
             if sorted_sizes[i][1] in photos_for_upload:
                 sorted_sizes[i][1] += '_'
             photos_for_upload[sorted_sizes[i][1]] = sorted_sizes[i][2]
-        pprint(photos_for_upload)
         return photos_for_upload
 
 
